@@ -1,13 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>sheyd</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>sheyd</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
     /* ========== Base ========== */
     :root {
       --bg-color: #121212;
@@ -347,144 +346,148 @@
       #info .info-right{ margin-top:8px }
     }
   </style>
-</head>
+<style>
+/* Мобильная оптимизация для формы предложений */
+@media (max-width: 600px) {
+  .suggestion-form textarea,
+  .suggestion-form input[type="text"] {
+    width: 100% !important;
+    font-size: 16px;
+  }
+  .suggestion-form .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .suggestion-form button {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+  }
+  .info-right {
+    padding: 10px;
+  }
+  #suggestionsList {
+    font-size: 15px;
+  }
+  .chip {
+    font-size: 15px !important;
+    padding: 8px 12px !important;
+  }
+}
+</style></head>
 <body>
-
-  <!-- Canvas для частиц -->
-  <canvas id="particles-canvas" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
-
-  <!-- Header: center-block in middle column -->
-  <header>
-    <div></div> <!-- empty left column for symmetry -->
-
-    <div class="center-wrap" role="banner" aria-label="Главная шапка">
-      <div class="top-row">
-        <h1 id="logo">sheyd</h1>
-
-        <nav aria-label="Главная навигация">
-          <a href="#main-scene" class="active">Главная</a>
-          <a href="#status">Статус</a>
-          <a href="#info">Информация</a>
-        </nav>
-      </div>
-
-      <div style="display:flex;gap:8px;align-items:center;">
-        <!-- visual balance -->
-      </div>
-    </div>
-
-    <div class="header-right" aria-hidden="false">
-      <button id="theme-toggle" class="chip" aria-label="Переключить тему">Светлая тема</button>
-      <button id="ach-open" class="chip" title="Достижения" aria-label="Достижения">🏆</button>
-      <button id="reset-storage" class="chip" title="Сбросить прогресс">Сброс</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-      <section id="main-scene" tabindex="-1" aria-label="Главная сцена">
-        <h2>Sheyd</h2>
-        <p>Проект, созданный с любовью и вниманием к деталям. Здесь вы найдете всё, что нужно для комфортного взаимодействия.</p>
-        <a href="https://discord.gg/4muNVxCegd" target="_blank" rel="noopener noreferrer" class="btn" aria-label="Перейти на Discord сервер">ПЕРЕЙТИ</a>
-      </section>
-
-      <section id="status" tabindex="-1" aria-label="Статус сервера" style="display:none;">
-        <h2>С конца сезона прошло</h2>
-        <div id="time-since-season" style="font-weight:700;color:var(--header-text);margin-top:6px"></div>
-        <div id="countdown" aria-live="polite" aria-atomic="true" style="font-weight:800;font-size:24px;margin-top:8px;color:var(--header-text)"></div>
-      </section>
-
-      <!-- Info section now contains two columns: left = info, right = suggestions -->
-      <section id="info" tabindex="-1" aria-label="Информация" style="display:none;">
-        <div class="info-grid">
-          <div class="info-left">
-            <h2>Информация</h2>
-            <h3>О проекте</h3>
-            <p>Sheyd - модовый приватный сервер. Здесь собираются обновления, новости и идеи от сообщества.</p>
-
-            <div style="margin-top:14px">
-              <p id="typing-text" aria-live="polite" aria-atomic="true" style="margin-top:8px"></p>
-            </div>
-
-            <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-              <a class="btn" href="https://discord.gg/4muNVxCegd" target="_blank" rel="noopener noreferrer">Discord</a>
-              <a class="btn" href="https://www.youtube.com/@Sheyd_s" target="_blank" rel="noopener noreferrer">YouTube</a>
-              <a class="btn" href="https://t.me/sheydmini" target="_blank" rel="noopener noreferrer">Telegram</a>
-            </div>
-          </div>
-
-          <aside class="info-right" aria-label="Предложения пользователей">
-            <h3 style="margin-top:0">Предложения</h3>
-            <p style="font-size:13px;color:var(--muted-color);margin-bottom:8px">
-              Напишите, что вы хотели бы видеть на сайте. В данный момент работает некорректно
-            </p>
-
-            <form id="suggestionForm" class="suggestion-form" aria-label="Форма предложений">
-              <textarea id="suggestionInput" placeholder="Опишите идею или пожелание..." maxlength="1000" required></textarea>
-
-              <div class="row" style="margin-top:8px">
-                <input id="suggestionName" type="text" placeholder="Имя (необязательно)" maxlength="60" />
-                <button type="submit" aria-label="Отправить предложение">Отправить</button>
-              </div>
-            </form>
-
-            <div style="margin-top:12px; font-size:13px; color:var(--muted-color)">Последние предложения</div>
-            <div id="suggestionsList" class="suggestions-list" aria-live="polite" aria-atomic="true"></div>
-
-            <div style="margin-top:10px; display:flex; gap:8px;">
-              <button id="clearSuggestions" class="chip" style="padding:6px 10px;font-size:13px">Очистить</button>
-              <div id="suggestionsCount" style="margin-left:auto;font-size:13px;color:var(--muted-color)">0</div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section id="secret-section" tabindex="-1" aria-label="Секретная секция" style="display:none;">
-        <h2>🎉 Секретная секция</h2>
-        <p>Вы ввели секретную комбинацию клавиш — поздравляю!
+<!-- Canvas для частиц -->
+<canvas aria-hidden="true" id="particles-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
+<!-- Header: center-block in middle column -->
+<header>
+<div></div> <!-- empty left column for symmetry -->
+<div aria-label="Главная шапка" class="center-wrap" role="banner">
+<div class="top-row">
+<h1 id="logo">sheyd</h1>
+<nav aria-label="Главная навигация">
+<a class="active" href="#main-scene">Главная</a>
+<a href="#status">Статус</a>
+<a href="#info">Информация</a>
+</nav>
+</div>
+<div style="display:flex;gap:8px;align-items:center;">
+<!-- visual balance -->
+</div>
+</div>
+<div aria-hidden="false" class="header-right">
+<button aria-label="Переключить тему" class="chip" id="theme-toggle">Светлая тема</button>
+<button aria-label="Достижения" class="chip" id="ach-open" title="Достижения">🏆</button>
+<button class="chip" id="reset-storage" title="Сбросить прогресс">Сброс</button>
+</div>
+</header>
+<main>
+<div class="container">
+<section aria-label="Главная сцена" id="main-scene" tabindex="-1">
+<h2>Sheyd</h2>
+<p>Проект, созданный с любовью и вниманием к деталям. Здесь вы найдете всё, что нужно для комфортного взаимодействия.</p>
+<a aria-label="Перейти на Discord сервер" class="btn" href="https://discord.gg/4muNVxCegd" rel="noopener noreferrer" target="_blank">ПЕРЕЙТИ</a>
+</section>
+<section aria-label="Статус сервера" id="status" style="display:none;" tabindex="-1">
+<h2>С конца сезона прошло</h2>
+<div id="time-since-season" style="font-weight:700;color:var(--header-text);margin-top:6px"></div>
+<div aria-atomic="true" aria-live="polite" id="countdown" style="font-weight:800;font-size:24px;margin-top:8px;color:var(--header-text)"></div>
+</section>
+<!-- Info section now contains two columns: left = info, right = suggestions -->
+<section aria-label="Информация" id="info" style="display:none;" tabindex="-1">
+<div class="info-grid">
+<div class="info-left">
+<h2>Информация</h2>
+<h3>О проекте</h3>
+<p>Sheyd - модовый приватный сервер. Здесь собираются обновления, новости и идеи от сообщества.</p>
+<div style="margin-top:14px">
+<p aria-atomic="true" aria-live="polite" id="typing-text" style="margin-top:8px"></p>
+</div>
+<div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+<a class="btn" href="https://discord.gg/4muNVxCegd" rel="noopener noreferrer" target="_blank">Discord</a>
+<a class="btn" href="https://www.youtube.com/@Sheyd_s" rel="noopener noreferrer" target="_blank">YouTube</a>
+<a class="btn" href="https://t.me/sheydmini" rel="noopener noreferrer" target="_blank">Telegram</a>
+</div>
+</div>
+<aside aria-label="Предложения пользователей" class="info-right">
+<h3 style="margin-top:0">Предложения</h3>
+<p style="font-size:13px;color:var(--muted-color);margin-bottom:8px">
+    Поделитесь идеями, что вы хотели бы видеть на сайте — ваши предложения увидят все!
+  </p>
+<form aria-label="Форма предложений" class="suggestion-form" id="suggestionForm">
+<textarea id="suggestionInput" maxlength="1000" placeholder="Опишите идею или пожелание..." required=""></textarea>
+<div class="row" style="margin-top:8px">
+<input id="suggestionName" maxlength="60" placeholder="Имя (необязательно)" type="text"/>
+<button aria-label="Отправить предложение" type="submit">💡 Отправить идею</button>
+</div>
+</form>
+<div style="margin-top:12px; font-size:13px; color:var(--muted-color)">Последние предложения</div>
+<div aria-atomic="true" aria-live="polite" class="suggestions-list" id="suggestionsList"></div>
+<div style="margin-top:10px; display:flex; gap:8px;">
+<button class="chip" id="clearSuggestions" style="padding:6px 10px;font-size:13px">Очистить</button>
+<div id="suggestionsCount" style="margin-left:auto;font-size:13px;color:var(--muted-color)">0</div>
+</div>
+</aside>
+</div>
+</section>
+<section aria-label="Секретная секция" id="secret-section" style="display:none;" tabindex="-1">
+<h2>🎉 Секретная секция</h2>
+<p>Вы ввели секретную комбинацию клавиш — поздравляю!
         <p>Возвращайся позже, и здесь точно что-то будет.</p>
-        </p>
-        <div style="margin-top:12px"><button id="secret-back" class="btn">Вернуться</button></div>
-      </section>
-
-      <section id="sheyd-section" tabindex="-1" aria-label="SHEYD секция" style="display:none;">
-        <h2>🔐 SHEYD</h2>
-        <p>Вы ввели комбинацию <strong>S H E Y D</strong> — специальная секция открыта!</p>
-        <p>Возвращайся позже, и здесь точно что-то будет.</p>
-        <div style="margin-top:12px"><button id="sheyd-back" class="btn">Вернуться</button></div>
-      </section>
-
-      <section id="achievements" tabindex="-1" aria-label="Достижения" style="display:none;">
-        <h2>🏆 Достижения</h2>
-        <div id="ach-list" class="ach-list" aria-live="polite" style="margin-top:12px"></div>
-        <div style="margin-top:12px"><button id="ach-back" class="btn">Вернуться</button></div>
-      </section>
-
-      <section id="bonus-section" tabindex="-1" aria-label="Бонусная секция" style="display:none;">
-        <h2>🔒 Бонусная секция</h2>
-        <p>Открывается отдельной секретной комбинацией (PAGE).</p>
-        <p>Возвращайся позже, и здесь точно что-то будет.</p>
-        <div style="margin-top:12px"><button id="bonus-back" class="btn">Вернуться</button></div>
-      </section>
-    </div>
-  </main>
-
-  <footer id="page-footer">
-    <p>© 2025 Sheyd - Сделано с ❤️</p>
-    <p>unknown stuff</p>
-  </footer>
-
-  <!-- modal & toast -->
-  <div id="secret-modal" class="secret-modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <h3>🎉 Секрет открыт!</h3>
-    <p>Ты нажал на логотип 10 раз — поздравляю! Вот твой секрет: <strong>✨ Удачи и хорошего дня!</strong></p>
-    <p>Возвращайся позже, и здесь точно что-то будет.</p>
-    <div style="margin-top:12px"><button id="close-secret" class="btn">Закрыть</button></div>
-  </div>
-
-  <div id="toast" role="status" aria-live="polite"></div>
-
-  <script>
+</p>
+<div style="margin-top:12px"><button class="btn" id="secret-back">Вернуться</button></div>
+</section>
+<section aria-label="SHEYD секция" id="sheyd-section" style="display:none;" tabindex="-1">
+<h2>🔐 SHEYD</h2>
+<p>Вы ввели комбинацию <strong>S H E Y D</strong> — специальная секция открыта!</p>
+<p>Возвращайся позже, и здесь точно что-то будет.</p>
+<div style="margin-top:12px"><button class="btn" id="sheyd-back">Вернуться</button></div>
+</section>
+<section aria-label="Достижения" id="achievements" style="display:none;" tabindex="-1">
+<h2>🏆 Достижения</h2>
+<div aria-live="polite" class="ach-list" id="ach-list" style="margin-top:12px"></div>
+<div style="margin-top:12px"><button class="btn" id="ach-back">Вернуться</button></div>
+</section>
+<section aria-label="Бонусная секция" id="bonus-section" style="display:none;" tabindex="-1">
+<h2>🔒 Бонусная секция</h2>
+<p>Открывается отдельной секретной комбинацией (PAGE).</p>
+<p>Возвращайся позже, и здесь точно что-то будет.</p>
+<div style="margin-top:12px"><button class="btn" id="bonus-back">Вернуться</button></div>
+</section>
+</div>
+</main>
+<footer id="page-footer">
+<p>© 2025 Sheyd - Сделано с ❤️</p>
+<p>unknown stuff</p>
+</footer>
+<!-- modal & toast -->
+<div aria-hidden="true" aria-modal="true" class="secret-modal" id="secret-modal" role="dialog">
+<h3>🎉 Секрет открыт!</h3>
+<p>Ты нажал на логотип 10 раз — поздравляю! Вот твой секрет: <strong>✨ Удачи и хорошего дня!</strong></p>
+<p>Возвращайся позже, и здесь точно что-то будет.</p>
+<div style="margin-top:12px"><button class="btn" id="close-secret">Закрыть</button></div>
+</div>
+<div aria-live="polite" id="toast" role="status"></div>
+<script>
     // ----------------- Утилиты -----------------
     function showToast(text, timeout = 3000) {
       const t = document.getElementById('toast');
@@ -1148,4 +1151,3 @@
   </script>
 </body>
 </html>
-
