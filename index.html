@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="ru">
 <head>
@@ -38,7 +38,7 @@
       font-family:'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
-      transition:background-color .6s, color .6s;
+      
       scroll-behavior:smooth;
     }
     body.light{
@@ -345,7 +345,12 @@
       #info .info-left{ text-align:center }
       #info .info-right{ margin-top:8px }
     }
-  </style>
+  
+body.theme-transition {
+  transition: background-color .6s, color .6s;
+}
+
+</style>
 <style>
 /* Мобильная оптимизация для формы предложений */
 @media (max-width: 600px) {
@@ -524,6 +529,10 @@
     function setTheme(theme) {
       if (!themeToggleBtn) return;
       if (theme === 'light') {
+
+      document.body.classList.add('theme-transition');
+      setTimeout(() => document.body.classList.remove('theme-transition'), 700);
+
         document.body.classList.add('light');
         themeToggleBtn.textContent = 'Тёмная тема';
       } else {
