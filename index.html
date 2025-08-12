@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 
 <html lang="ru">
 <head>
@@ -995,7 +995,12 @@
     // Achievements UI
     const ACHS = [
       { id: 'found3eggs', title: 'Нашёл 3 пасхалки', desc: 'Найди 3 скрытые пасхалки на сайте' },
-      { id: 'visited100', title: 'Посетил сайт 100 раз', desc: 'Открой сайт 100 раз' }
+      { id: 'visited100', title: 'Посетил сайт 100 раз', desc: 'Открой сайт 100 раз' },
+      { id: 'firstVisit', title: 'Ранний гость', desc: 'Посети сайт хотя бы один раз' },
+      { id: 'spent30min', title: 'Полчаса на сайте', desc: 'Проведи на сайте 30 минут суммарно' },
+      { id: 'suggested5', title: 'Активный комментатор', desc: 'Отправь 5 предложений' },
+      { id: 'visited10', title: 'Вернулся снова', desc: 'Посети сайт 10 раз' },
+      { id: 'visited365', title: 'Фанат', desc: 'Посети сайт 365 раз' }
     ];
     function populateAchievements() {
       const list = document.getElementById('ach-list');
@@ -1148,6 +1153,88 @@
     function animateParticles(){ if(!particlesCtx||!particlesCanvas) return; particlesCtx.clearRect(0,0,particlesCanvas.width,particlesCanvas.height); particleArray.forEach(p=>{ p.update(); p.draw(); }); requestAnimationFrame(animateParticles) }
     initParticles(); animateParticles();
 
-  </script>
+  
+
+
+// Добавляем надпись "Скоро"
+const soonLabel = document.createElement('div');
+soonLabel.textContent = 'Скоро';
+soonLabel.style.cssText = 'font-weight:700;font-size:28px;margin-top:10px;color:var(--text-color)';
+document.getElementById('status').appendChild(soonLabel);
+
+// Новый таймер до 18 августа 2025, 15:00
+const countdown18El = document.createElement('div');
+countdown18El.id = 'countdown-18';
+countdown18El.style.cssText = 'font-weight:800;font-size:24px;margin-top:12px;color:green';
+document.getElementById('status').appendChild(countdown18El);
+
+const targetDate18 = new Date('2025-08-18T15:00:00');
+
+function updateCountdownTo18() {
+  const now = new Date();
+  let diff = targetDate18 - now;
+  if (diff < 0) diff = 0;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+  countdown18El.textContent = `${days} : ${hours.toString().padStart(2,'0')} : ${minutes.toString().padStart(2,'0')} : ${seconds.toString().padStart(2,'0')}`;
+}
+
+setInterval(updateCountdownTo18, 1000);
+updateCountdownTo18();
+
+
+    // Новая логика для дополнительных достижений
+    (function checkExtraAchievements() {
+      let state = safeGet('achievementsState', { visited100:false, found3eggs:false, eggs: [], dates: {} });
+      let visits = window.__visits || 0;
+
+      // Ранний гость
+      if (!state.firstVisit && visits >= 1) {
+        state.firstVisit = true;
+        state.dates.firstVisit = new Date().toLocaleString();
+        showToast('🏆 Достижение: Ранний гость');
+      }
+
+      // Вернулся снова
+      if (!state.visited10 && visits >= 10) {
+        state.visited10 = true;
+        state.dates.visited10 = new Date().toLocaleString();
+        showToast('🏆 Достижение: Вернулся снова');
+      }
+
+      // Фанат
+      if (!state.visited365 && visits >= 365) {
+        state.visited365 = true;
+        state.dates.visited365 = new Date().toLocaleString();
+        showToast('🏆 Достижение: Фанат');
+      }
+
+      // Полчаса на сайте
+      let timeSpent = safeGet('timeSpent', 0);
+      setInterval(() => {
+        timeSpent += 1;
+        safeSet('timeSpent', timeSpent);
+        if (!state.spent30min && timeSpent >= 1800) {
+          state.spent30min = true;
+          state.dates.spent30min = new Date().toLocaleString();
+          showToast('🏆 Достижение: Полчаса на сайте');
+        }
+        safeSet('achievementsState', state);
+      }, 1000);
+
+      // Активный комментатор
+      const suggestions = safeGet('siteSuggestions', []);
+      if (!state.suggested5 && suggestions.length >= 5) {
+        state.suggested5 = true;
+        state.dates.suggested5 = new Date().toLocaleString();
+        showToast('🏆 Достижение: Активный комментатор');
+      }
+
+      safeSet('achievementsState', state);
+    })();
+
+</script>
 </body>
 </html>
